@@ -11,20 +11,13 @@ import main
 
 
 class Worker(QThread):
-    sinOut = pyqtSignal(str)
-
+    sinOut = pyqtSignal()
     def __init__(self):
         super(Worker, self).__init__()
-        self.num = 0
 
     def run(self):
-        # 每个循环发送一个信号
-        while self.num < 5:
-            index = 'index {0}'.format(self.num)  # str.format()
-            self.num += 1
-            # 发出信号
-            self.sinOut.emit(index)
-            self.sleep(2)
+        main.run()
+        self.sinOut.emit()
 
 
 class Test(QMainWindow, Ui_MainWindow):
@@ -38,23 +31,23 @@ class Test(QMainWindow, Ui_MainWindow):
     def connector(self):
         self.chooseButton.clicked.connect(self.choose_file)
         self.searchButton_actions.clicked.connect(self.display_running_state)  # 多步调整
-        self.searchButton_actions.clicked.connect(self.search_actions)  # 多步调整
+        # self.searchButton_actions.clicked.connect(self.search_actions)  # 多步调整
 
         self.searchButton_actions_one_step.clicked.connect(self.search_actions_one_step)  # 单步调整
         # self.searchButton_knowledge.clicked.connect(self.search_knowledge) # 查询知识
 
         # 为线程按钮绑定函数
-        self.searchButton_knowledge.clicked.connect(self.slot_start)
+        # self.searchButton_knowledge.clicked.connect(self.slot_start)
 
     #########################################################
     # 线程中每个循环结束发送一个信号，接收信号运行slot_add在文本框里打印
-    def slot_start(self):
-        # self.searchButton_knowledge.setEnabled(False)
-        self.thread.start()
-        self.thread.sinOut.connect(self.slot_add)
-
-    def slot_add(self, index):
-        self.textEdit_display_knowledge.append(index)
+    # def slot_start(self):
+    #     # self.searchButton_knowledge.setEnabled(False)
+    #     self.thread.start()
+    #     self.thread.sinOut.connect(self.slot_add)
+    #
+    # def slot_add(self, index):
+    #     self.textEdit_display_knowledge.append(index)
 
     #########################################################
 
@@ -69,20 +62,20 @@ class Test(QMainWindow, Ui_MainWindow):
         self.textEdit_display_knowledge.setText("Hello World")
 
     def display_running_state(self):
-        self.textEdit_display_actions.append('调整中...')
-        QApplication.processEvents()
+        self.textEdit_display_actions.setText('调整中...')
+        # QApplication.processEvents()
+        self.thread.start()
+        self.thread.sinOut.connect(self.search_actions)
 
     def show_graph(self, graph_path):
         self.label_graph.setPixmap(QPixmap(graph_path))
         self.label_graph.setScaledContents(True)
 
     def search_actions(self):
-        main.run()
+        #main.run()
         res = ''
         with open('result.txt', encoding="utf-8") as f:
-            L = f.readlines()
-            for i in L:
-                res += i.strip() + '\n'
+            res = f.read()
         self.textEdit_display_actions.append(res)
 
     def choose_file(self):
