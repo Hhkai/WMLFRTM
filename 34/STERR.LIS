@@ -1,0 +1,13 @@
+ ****** 计算过程中的错误和警告信息 ******
+PSASP Transient Stability Calculation Version:20180916
+ 基本元件信息  当前     系统最大
+       母线数 =       39    60000
+       线路数 =      134   120000
+     变压器数 =       16   120000
+   常规直流数 =        1      120
+     发电机数 =        8    10000
+       负荷数 =       10    40000
+系统基准容量(MVA)  =   100.0
+ File ST.S0 not found !                                                                                                                                                                                                                                                                                                         
+Error: ST.S0 not found !
+Calculation finished ,close windows please....
