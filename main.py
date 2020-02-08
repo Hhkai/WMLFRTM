@@ -3,6 +3,7 @@
 import FeatureS
 import ops
 import os
+import time
 
 import shutil
 
@@ -95,16 +96,17 @@ def run():
     while True:
         s = FeatureS.getFeatures()
         r = ops.doOps(s)
-        if r == -1:
+        if r == 'nocmd' or r == 'steptoosmall':
             break
     os.system('del result.txt')
     compare_result("../34/LF.L2", "LF.L2", "../34/LF.L5", "LF.L5", "../34/LF.L6", "LF.L6",
                 "LF.L1", "lfreport.lis", "result.txt")
+    time.sleep(2)
 def runOne():
     while True:
         s = FeatureS.getFeatures()
         r = ops.doOps(s)
-        if r == -1:
+        if r == 'nocmd' or r == 'steptoosmall':
             return 'success'
         if r == 'pause':
             with open('ops.txt', encoding='utf-8') as f:

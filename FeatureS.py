@@ -1,6 +1,20 @@
 # coding:utf-8
 
 import myutils
+import os
+
+def changemx(b):
+    # 调整潮流
+    mx = myutils.readfile('LF.L6')
+    for i in range(len(mx)):
+        print(mx[i][4], type(mx[i][4]))
+        mx[i][4] = mx[i][4] * b
+        mx[i][5] = mx[i][5] * b
+    myutils.writefile("LF.L6", mx)
+    mx2 = myutils.readfile('LF.L5')
+    for i in range(len(mx2)):
+        mx2[i][3] = mx2[i][3] * b
+    myutils.writefile('LF.L5', mx2)
 
 def getFeatures():
     f = myutils.readflag()
@@ -13,131 +27,51 @@ def getFeatures():
     r = f['r']
     cur = f['cur']
     step = f['step']
+    
+    b = cur/r
+    f['r'] = cur
+    changemx(b)
     myutils.writeflag(f)
+    os.system('WMLFRTMsg')
+    
+    with open('ops.txt', 'a', encoding='utf-8') as fi:
+        fi.write('当前潮流水平:%d%%\n' % int(cur * 100))
+    conv = None
+    if not myutils.getflag():
+        f['goone'] = -1
+        myutils.writeflag(f)
+        conv = '不收敛'
+        #return -1  #failure
+    else:
+        conv = '收敛'
+    with open('ops.txt', 'a', encoding='utf-8') as fi:
+        fi.write('当前收敛状态:%s\n' % conv)
+    checked = None
+    if ('findLP1' in f) and (f['findLP1'] != None):
+        checked = '已检查'
+    elif ('findLP1' in f) and (f['findLP1'] == None):
+        checked = '已调节'
+    else:
+        checked = '未检查'
+    with open('ops.txt', 'a', encoding='utf-8') as fi:
+        fi.write('异常母线:%s\n' % checked)
+    ####
+    if checked == '已检查':
+        return '有异常母线'
+    
     if 'goone' in f:
         goone = f['goone']
         if goone == "fail":
-            return False
+            return 'fail'
         if goone == -1:  # fail
-            cur -= step
-            step *= 0.5
-            f['cur'] = cur
-            f['step'] = step
-            myutils.writeflag(f)
-            if step < 0.002:
-                return False
+            return 'goone=-1'
         if goone == 0:  # success
             if (r - 1) < 0.001 and (r - 1) > -0.001:
                 print('success')
                 return 'success'
-            cur += step
-            if cur > 1:
-                cur = 1.0
-            f['cur'] = cur
-            myutils.writeflag(f)
-            return 'goone'
+            return 'goone=0'
         if goone == 1:  # unknown , continue
             print('goone==1')
-            return 'goone'
+            return 'goone' #'goone':检查
     else:
         return 'goone'
-    if 'cur' in f:
-        pass 
-    if 'r' in f:
-        if (r - 1) < 0.001 and (r - 1) > -0.001:
-            print('???')
-            return 
-        if r > 1:
-            print('QAQ')
-            return
-    
-    
-    if myutils.getflag():
-        return "收敛"
-def findLP1(genList, loadList, markList):
-    lp1 = readfile('LF.LP1', coding='gb2312')
-    n = 0
-    loadsdown = []
-    loadsup = []
-    loadssum = 0
-    abss = []
-    for i in lp1:
-        if len(i) == 4:
-            loadssum += i[1]
-            n += 1
-    #
-    gen = None
-    val = 1
-    mx5 = readfile('LF.L5')
-    if n * 0.85 > loadssum:
-        for i in lp1:
-            if len(i) == 4:
-                if i[1] < val and (i[0] in genList):
-                    gen = genList[i[0]]
-                    val = i[1]
-        P = mx5[gen][3]
-        r = (P + 0.5) / P
-        if P < 0:
-            r = -1
-        mx5[gen][3] = mx5[gen][3] * r
-        mx5[gen][4] = mx5[gen][4] * r
-        writefile('LF.L5', mx5)
-        print('0.85', gen)
-        return (-2, 1)
-    #
-    gen = None
-    val = 0
-    if n * 1.15 < loadssum:
-        for i in lp1:
-            if len(i) == 4:
-                if i[1] > val and (
-                        i[0] in genList) and mx5[genList[i[0]]][3] > 0.1:
-                    gen = genList[i[0]]
-                    val = i[1]
-        if gen == None:
-            pass  ########## gao !!!!!!!!!!!!!!
-        else:
-            P = mx5[gen][3]
-            r = (P - 0.5) / P
-            if r < 0:
-                r = 0.5
-            mx5[gen][3] = mx5[gen][3] * r
-            mx5[gen][4] = mx5[gen][4] * r
-            writefile('LF.L5', mx5)
-            print('1.15', gen)
-            return (-2, 1)
-    #
-    fixtype = -1
-    fixline = 0
-    fixnum = 1.0
-    for i in lp1:
-        if len(i) == 4:
-            if abs(i[1] - 1) > 0.1:
-                curtype = -2
-                if i[0] in genList:
-                    curtype = 1
-                if i[0] in loadList:
-                    curtype = 0
-                    if i[0] in markList:
-                        continue
-                if curtype >= fixtype:
-                    if abs(i[1] - 1) > abs(fixnum - 1):
-                        fixline = i[0]
-                        fixtype = curtype
-                        fixnum = i[1]
-            #
-    if fixtype == -1:
-        return (-1, 1)
-    if fixtype == -2:
-        print('error')
-        exit()
-    if fixline in genList:
-        gen = genList[fixline]
-        print(0, gen)
-        return (0, gen)  # line num
-    if fixline in loadList:
-        load = loadList[fixline]
-        print(1, load)
-        # return (1, load, fixnum > 1) # line num
-        return (1, fixline, fixnum > 1)  # L1 id
-    return (-3, 1)

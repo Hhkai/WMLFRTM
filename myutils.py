@@ -74,3 +74,29 @@ def writeflag(dic):
 # for ind, i in enumerate(mx6):
     # loadList[i[1]] = ind
 # genDis = readfile('genDis.txt')
+def readMaxBus():
+    busesName = set()
+    with open('lfreport.lis') as f:
+        lines = f.readlines()
+        for line in lines:
+            templine = line.strip().split()
+            try:
+                x = int(templine[0])
+                busesName.add(templine[1])
+            except:
+                pass
+    #
+    res = set()
+    mx = readfile('LF.L1')
+    for i in busesName:
+        for indj, j in enumerate(mx):
+            if j[-1] == i:
+                res.add(indj + 1)
+    return res
+def ishigh(x):
+    lp1 = readfile('LF.LP1', coding='gb2312')
+    for i in lp1:
+        if len(i) == 4:
+            if i[0] == x:
+                print(i[1])
+                return i[1]>1
