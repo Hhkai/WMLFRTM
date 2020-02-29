@@ -1,16 +1,21 @@
 # coding:utf-8
-from PyQt5.QtCore import pyqtSignal, QThread
-
-from Ui_MainWindow import Ui_MainWindow
 import sys
 import os
+
+curpath = os.path.realpath(__file__)
+prepath = curpath[:-7]
+sys.path.append(prepath)
+
+from PyQt5.QtCore import pyqtSignal, QThread
+from Ui_MainWindow import Ui_MainWindow
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog
 from PyQt5.QtGui import QPixmap
 
-import main
+import cmds
 import kb
 import tire.gentree
 from tire.gentree import Node
+import genDis
 
 class Worker(QThread):
     sinOut = pyqtSignal()
@@ -19,7 +24,7 @@ class Worker(QThread):
         super(Worker, self).__init__()
 
     def run(self):
-        main.run()
+        cmds.run()
         self.sinOut.emit()
 
 
@@ -47,7 +52,7 @@ class Test(QMainWindow, Ui_MainWindow):
         
     def search_actions_one_step(self):
         # self.textEdit_display_actions.setText("Hello World")
-        r = main.runOne()
+        r = cmds.runOne()
         self.textEdit_display_actions.append(r)
 
     def search_knowledge(self):
@@ -108,6 +113,7 @@ class Test(QMainWindow, Ui_MainWindow):
             os.chdir(folder)
             self.dir_flag = 1
             import myutils
+            genDis.main()
     #####
     def add_knowledge(self):
         n1 = self.lineEdit_2.text()
@@ -118,9 +124,10 @@ class Test(QMainWindow, Ui_MainWindow):
         model.addonetuple(tuple_list)
         self.textEdit.setText('加入成功\n%s\n%s\n%s\n' % (n1,n2,n3))
 
-
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     T = Test()
-    T.show_graph("9.bmp")
+    T.show_graph(prepath + "9.bmp")
     sys.exit(app.exec_())
+if __name__ == '__main__':
+    main()
