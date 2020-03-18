@@ -8,8 +8,10 @@ sys.path.append(prepath)
 
 from PyQt5.QtCore import pyqtSignal, QThread
 from Ui_MainWindow import Ui_MainWindow
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog
+from Ui_Dialog import Ui_Dialog
+from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QDialog
 from PyQt5.QtGui import QPixmap
+from PyQt5 import QtCore, QtWidgets
 
 import cmds
 import kb
@@ -27,6 +29,30 @@ class Worker(QThread):
         cmds.run()
         self.sinOut.emit()
 
+#########################################
+class SelectWindow_One_Step(QDialog,Ui_Dialog):
+    sinOut = pyqtSignal(str)
+    def __init__(self):
+        super(SelectWindow_One_Step, self).__init__()
+        self.setupUi(self)
+        self.buttonBox.accepted.connect(self.checkRadioButton)
+        self.buttonBox.rejected.connect(self.close)
+        self.radioButtons = []
+    
+    def add_radiobuttons(self, object_list):
+        for i in range(len(object_list)):
+            radioButton = QtWidgets.QRadioButton(self)
+            radioButton.setGeometry(QtCore.QRect(40, 30*(i+1), 115, 19))
+            radioButton.setText(object_list[i])
+            self.radioButtons.append(radioButton)
+
+    def checkRadioButton(self):
+        for i in range(len(self.radioButtons)):
+            if self.radioButtons[i].isChecked():
+                self.sinOut.emit(str(i))
+                self.close()
+                break
+#########################################
 
 class Test(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -54,6 +80,18 @@ class Test(QMainWindow, Ui_MainWindow):
         # self.textEdit_display_actions.setText("Hello World")
         r = cmds.runOne()
         self.textEdit_display_actions.append(r)
+
+###########################################################
+        self.select_window = SelectWindow_One_Step()
+        object_list = ["1", "2", "3", "4"] #选择列表
+        self.select_window.add_radiobuttons(object_list)
+        self.select_window.show()
+        self.select_window.sinOut.connect(self.do_one_step) 
+    
+    # 执行选择的操作
+    def do_one_step(self,number):
+        print(number)
+############################################################
 
     def search_knowledge(self):
         if self.dir_flag == 1:
