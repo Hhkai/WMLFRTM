@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1298, 550)
+        MainWindow.resize(1298, 654)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -78,6 +78,8 @@ class Ui_MainWindow(object):
         self.searchButton_knowledge.setObjectName("searchButton_knowledge")
         self.deleteButton_knowledge = QtWidgets.QPushButton(self.splitter_5)
         self.deleteButton_knowledge.setObjectName("deleteButton_knowledge")
+        self.displayButton_graph = QtWidgets.QPushButton(self.splitter_5)
+        self.displayButton_graph.setObjectName("displayButton_graph")
         self.textEdit_display_knowledge = QtWidgets.QTextBrowser(self.splitter_6)
         self.textEdit_display_knowledge.setObjectName("textEdit_display_knowledge")
         self.verticalLayout_2.addWidget(self.splitter_6)
@@ -165,7 +167,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -179,16 +181,17 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">输入知识：</p></body></html>"))
         self.searchButton_knowledge.setText(_translate("MainWindow", "查询"))
         self.deleteButton_knowledge.setText(_translate("MainWindow", "删除"))
+        self.displayButton_graph.setText(_translate("MainWindow", "显示"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "查询知识"))
-        self.label_5.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">状态1\\实体1：</p></body></html>"))
-        self.label_6.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">操作 \\关系 ：</p></body></html>"))
-        self.label_7.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">状态2\\实体2：</p></body></html>"))
+        self.label_5.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">label1：</p></body></html>"))
+        self.label_6.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">label2：</p></body></html>"))
+        self.label_7.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">label3：</p></body></html>"))
         self.AddButton_knowledge.setText(_translate("MainWindow", "\n"
 "添加\n"
 ""))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "添加知识"))
-        self.pushButton.setText(_translate("MainWindow", ""))
-        self.pushButton_2.setText(_translate("MainWindow", ""))
-        self.pushButton_3.setText(_translate("MainWindow", ""))
-        self.pushButton_4.setText(_translate("MainWindow", ""))
-        self.pushButton_5.setText(_translate("MainWindow", ""))
+        self.pushButton.setText(_translate("MainWindow", "随机负荷"))
+        self.pushButton_2.setText(_translate("MainWindow", "潮流计算"))
+        self.pushButton_3.setText(_translate("MainWindow", "搜索方案"))
+        self.pushButton_4.setText(_translate("MainWindow", "帮助"))
+        self.pushButton_5.setText(_translate("MainWindow", "退出"))

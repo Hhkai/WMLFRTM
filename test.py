@@ -18,6 +18,23 @@ import kb
 import tire.gentree
 from tire.gentree import Node
 import genDis
+from graphviz import Digraph
+import csv
+
+def draw_graph(source_file):
+    dot = Digraph()
+    dot.attr('node', fontname='Microsoft YaHei')
+    dot.attr('edge', fontname='Microsoft YaHei')
+    with open(source_file, 'r',encoding='utf-8') as f:
+        for row in csv.reader(f):
+            head_label,edge_label,tail_label=row[0].replace(":","："),row[1].replace(":","："),row[2].replace(":","：")
+            # print(tail_label)
+            # dot.node(head_label,label=head_label)
+            # dot.node(tail_label, label=tail_label)
+            dot.edge(head_label,tail_label,label=edge_label)
+    print(dot.source)
+    dot.format = 'png'
+    dot.render('draw_graph.gv', view=True)
 
 class Worker(QThread):
     sinOut = pyqtSignal()
@@ -75,6 +92,8 @@ class Test(QMainWindow, Ui_MainWindow):
         
         self.AddButton_knowledge.clicked.connect(self.add_knowledge)
         self.deleteButton_knowledge.clicked.connect(self.del_knowledge)
+
+        self.displayButton_graph.clicked.connect(self.display_graph)
         
     def search_actions_one_step(self):
         # self.textEdit_display_actions.setText("Hello World")
@@ -83,7 +102,7 @@ class Test(QMainWindow, Ui_MainWindow):
 
 ###########################################################
         self.select_window = SelectWindow_One_Step()
-        object_list = ["1", "2", "3", "4"] #选择列表
+        object_list = ["0", "1", "2", "3"] #选择列表
         self.select_window.add_radiobuttons(object_list)
         self.select_window.show()
         self.select_window.sinOut.connect(self.do_one_step) 
@@ -161,6 +180,13 @@ class Test(QMainWindow, Ui_MainWindow):
         model = kb.global_model
         model.addonetuple(tuple_list)
         self.textEdit.setText('加入成功\n%s\n%s\n%s\n' % (n1,n2,n3))
+    
+    def display_graph(self):
+        # file = QFileDialog.getOpenFileName(self, 'Select files', os.getcwd(), 'All Files (*)')
+        # print(file[0])
+        # if file[0]:
+        #     draw_graph(file[0])
+        draw_graph('graphtest.txt')
 
 def main():
     app = QApplication(sys.argv)
