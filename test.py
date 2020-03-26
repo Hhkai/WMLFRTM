@@ -59,7 +59,7 @@ class SelectWindow_One_Step(QDialog,Ui_Dialog):
     def add_radiobuttons(self, object_list):
         for i in range(len(object_list)):
             radioButton = QtWidgets.QRadioButton(self)
-            radioButton.setGeometry(QtCore.QRect(40, 30*(i+1), 115, 19))
+            radioButton.setGeometry(QtCore.QRect(10, 20+40*i, 480, 40))
             radioButton.setText(object_list[i])
             self.radioButtons.append(radioButton)
 
